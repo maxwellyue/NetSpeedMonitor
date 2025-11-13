@@ -12,11 +12,11 @@ struct MenuBarLabelContent: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 0) {
             if let traffic {
-                Text("↑ \(formatSpeed(bytes: traffic.outBytes))/s")
-                Text("↓ \(formatSpeed(bytes: traffic.inBytes))/s")
+                Text(verbatim: "↑ \(formatSpeed(bytes: traffic.outBytes))/s")
+                Text(verbatim: "↓ \(formatSpeed(bytes: traffic.inBytes))/s")
             } else {
-                Text("↑ --/s")
-                Text("↓ --/s")
+                Text(verbatim: "↑ --/s")
+                Text(verbatim: "↓ --/s")
             }
         }
         .font(.system(size: 8, weight: .bold, design: .rounded))
