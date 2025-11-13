@@ -9,8 +9,8 @@ struct NetSpeedMonitorApp: App {
             MenuContentView()
                 .environmentObject(menuBarState)
         } label: {
-            Image(nsImage: menuBarState.currentIcon)
-                .tag("MenuBarIcon")
+            MenuBarLabel()
+                .environmentObject(menuBarState)
         }
         .menuBarExtraStyle(.menu)
     }
