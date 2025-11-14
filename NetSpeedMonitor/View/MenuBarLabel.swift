@@ -3,10 +3,10 @@ import Foundation
 import SwiftUI
 
 struct MenuBarLabel: View {
-    @EnvironmentObject var menuBarState: MenuBarState
+    @StateObject var monitor: NetworkMonitor = .init()
 
     private var renderedIcon: NSImage? {
-        let renderer = ImageRenderer(content: MenuBarLabelContent(throughput: menuBarState.throughput))
+        let renderer = ImageRenderer(content: MenuBarLabelContent(throughput: monitor.throughput))
         renderer.scale = NSScreen.main?.backingScaleFactor ?? 3
         renderer.isOpaque = false
         guard let nsImage = renderer.nsImage else { return nil }
@@ -29,6 +29,5 @@ struct MenuBarLabel: View {
 
 #Preview {
     MenuBarLabel()
-        .environmentObject(MenuBarState())
         .padding()
 }
