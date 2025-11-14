@@ -12,8 +12,8 @@ struct MenuBarLabelContent: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 0) {
             if let throughput {
-                Text(verbatim: "↑ \(formatSpeed(bytes: throughput.txBps))/s")
-                Text(verbatim: "↓ \(formatSpeed(bytes: throughput.rxBps))/s")
+                Text(verbatim: "↑ \(NetworkThroughput.format(bytes: throughput.txBps))/s")
+                Text(verbatim: "↓ \(NetworkThroughput.format(bytes: throughput.rxBps))/s")
             } else {
                 Text(verbatim: "↑ --/s")
                 Text(verbatim: "↓ --/s")
@@ -23,19 +23,11 @@ struct MenuBarLabelContent: View {
         .monospacedDigit()
         .frame(height: 22, alignment: .trailing)
     }
-
-    private func formatSpeed(bytes: Double) -> String {
-        let clampedBytes = max(0, bytes)
-        return Self.byteFormatter.string(fromByteCount: Int64(clampedBytes))
-    }
 }
 
-extension MenuBarLabelContent {
-    static let byteFormatter: ByteCountFormatter = {
-        let formatter = ByteCountFormatter()
-        formatter.countStyle = .binary
-        formatter.allowedUnits = [.useKB, .useMB, .useGB, .useTB]
-        formatter.allowsNonnumericFormatting = false
-        return formatter
-    }()
+extension NetworkThroughput {
+    static func format(bytes: Double) -> String {
+        let formatter = ByteCountFormatter.byteFormatter
+        return formatter.string(fromByteCount: Int64(bytes))
+    }
 }
