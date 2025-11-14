@@ -6,7 +6,7 @@ struct MenuBarLabel: View {
     @EnvironmentObject var menuBarState: MenuBarState
 
     private var renderedIcon: NSImage? {
-        let renderer = ImageRenderer(content: MenuBarLabelContent(traffic: menuBarState.traffic))
+        let renderer = ImageRenderer(content: MenuBarLabelContent(throughput: menuBarState.throughput))
         renderer.scale = NSScreen.main?.backingScaleFactor ?? 3
         renderer.isOpaque = false
         guard let nsImage = renderer.nsImage else { return nil }

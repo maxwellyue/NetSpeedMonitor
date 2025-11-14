@@ -19,18 +19,21 @@ class MenuBarState: ObservableObject {
         }
     }
 
-    @Published var traffic: NetTraffic?
+    @Published var throughput: NetworkThroughput?
 
     private var timerTask: Task<Void, Never>?
-    private var netTrafficStat = NetTrafficStatReceiver()
+    private var previousCounters: NetworkCounters = .get()
 
     private func startTimer() {
         timerTask = Task {
             while !Task.isCancelled {
-                let traffic = NetTraffic.current(using: netTrafficStat)
+                let current = NetworkCounters.get()
+                let newSpeed = NetworkThroughput.calculate(from: previousCounters, to: current, interval: Double(netSpeedUpdateInterval.rawValue))
+                logger.info("current txBytes: \(String(format: "%.6f", newSpeed.txBps)) B/s, rtBytes: \(String(format: "%.6f", newSpeed.rxBps)) B/s")
                 await MainActor.run {
-                    self.traffic = traffic
+                    self.throughput = newSpeed
                 }
+                self.previousCounters = current
                 try? await Task.sleep(for: .seconds(Double(netSpeedUpdateInterval.rawValue)))
             }
         }

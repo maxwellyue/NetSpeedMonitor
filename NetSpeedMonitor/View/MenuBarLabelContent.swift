@@ -7,13 +7,13 @@
 import SwiftUI
 
 struct MenuBarLabelContent: View {
-    var traffic: NetTraffic?
+    var throughput: NetworkThroughput?
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 0) {
-            if let traffic {
-                Text(verbatim: "↑ \(formatSpeed(bytes: traffic.outBytes))/s")
-                Text(verbatim: "↓ \(formatSpeed(bytes: traffic.inBytes))/s")
+            if let throughput {
+                Text(verbatim: "↑ \(formatSpeed(bytes: throughput.txBps))/s")
+                Text(verbatim: "↓ \(formatSpeed(bytes: throughput.rxBps))/s")
             } else {
                 Text(verbatim: "↑ --/s")
                 Text(verbatim: "↓ --/s")
