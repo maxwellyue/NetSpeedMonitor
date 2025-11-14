@@ -11,13 +11,13 @@ class NetworkMonitor: ObservableObject {
     @Published var throughput: NetworkThroughput?
 
     private var timerTask: Task<Void, Never>?
-    private var previousCounters: NetworkCounters = .get()
+    private var previousCounters: NetworkByteCounters = .get()
 
     private func startTimer() {
         timerTask = Task {
             while !Task.isCancelled {
                 let netSpeedUpdateInterval = await Profiles.shared.netSpeedUpdateInterval
-                let current = NetworkCounters.get()
+                let current = NetworkByteCounters.get()
                 let newSpeed = NetworkThroughput.calculate(from: previousCounters, to: current, interval: Double(netSpeedUpdateInterval.rawValue))
                 logger.info("current txBytes: \(String(format: "%.6f", newSpeed.txBps)) B/s, rtBytes: \(String(format: "%.6f", newSpeed.rxBps)) B/s")
                 await MainActor.run {
@@ -45,19 +45,19 @@ class NetworkMonitor: ObservableObject {
     }
 }
 
-extension NetworkCounters {
-    static func get() -> NetworkCounters {
+extension NetworkByteCounters {
+    static func get() -> NetworkByteCounters {
         var addrsPtr: UnsafeMutablePointer<ifaddrs>?
         guard getifaddrs(&addrsPtr) == 0, let firstAddr = addrsPtr else {
             logger.error("getifaddrs failed")
-            return NetworkCounters(totalRxBytes: 0, totalTxBytes: 0, perInterface: [:])
+            return NetworkByteCounters(rx: 0, tx: 0, perInterface: [:])
         }
 
         defer { freeifaddrs(addrsPtr) }
 
         var totalRx: UInt64 = 0
         var totalTx: UInt64 = 0
-        var perInterface: [String: InterfaceCounters] = [:]
+        var perInterface: [String: InterfaceByteCounters] = [:]
 
         var ptr: UnsafeMutablePointer<ifaddrs>? = firstAddr
         while let current = ptr?.pointee {
@@ -80,7 +80,7 @@ extension NetworkCounters {
                 if name.hasPrefix("en") || name.hasPrefix("awdl") || name == "p2p0" {
                     totalRx += rx
                     totalTx += tx
-                    perInterface[name] = InterfaceCounters(rxBytes: rx, txBytes: tx)
+                    perInterface[name] = InterfaceByteCounters(rx: rx, tx: tx)
                 }
             }
         }
@@ -88,16 +88,16 @@ extension NetworkCounters {
         // 如果没有任何统计数据，也返回 nil
         guard !perInterface.isEmpty else {
             logger.error("perInterface is empty")
-            return NetworkCounters(totalRxBytes: 0, totalTxBytes: 0, perInterface: [:])
+            return NetworkByteCounters(rx: 0, tx: 0, perInterface: [:])
         }
-        return NetworkCounters(totalRxBytes: totalRx, totalTxBytes: totalTx, perInterface: perInterface)
+        return NetworkByteCounters(rx: totalRx, tx: totalTx, perInterface: perInterface)
     }
 }
 
 extension NetworkThroughput {
-    static func calculate(from previous: NetworkCounters, to current: NetworkCounters, interval: TimeInterval) -> NetworkThroughput {
-        let deltaRx = Double(current.totalRxBytes - previous.totalRxBytes)
-        let deltaTx = Double(current.totalTxBytes - previous.totalTxBytes)
+    static func calculate(from previous: NetworkByteCounters, to current: NetworkByteCounters, interval: TimeInterval) -> NetworkThroughput {
+        let deltaRx = Double(current.rx - previous.rx)
+        let deltaTx = Double(current.tx - previous.tx)
         guard interval > 0 else {
             logger.error("interval is zero or less than zero.")
             return NetworkThroughput(rxBps: 0, txBps: 0)

@@ -9,7 +9,6 @@ struct MenuBarLabel: View {
         Group {
             if let image = MenuBarLabelContent(throughput: monitor.throughput).snapshot() {
                 Image(nsImage: image)
-                    .frame(width: 66, height: 22)
             } else {
                 Text(verbatim: "UI Error")
             }
