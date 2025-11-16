@@ -30,18 +30,9 @@ struct MenuBarLabelTemplate: View {
         self.fontDesign = style.fontDesign
     }
 
-    func formattedString(_ value: Double?) -> String {
-        guard let value, value.isFinite, value >= 0 else {
-            return "--/s"
-        }
-        let clamped = min(value, Double(Int64.max))
-        let rounded = Int64(clamped.rounded())
-        return "\(ByteCountFormatter.byteFormatter.string(fromByteCount: rounded))/s"
-    }
-
     @ViewBuilder
     func text(_ value: Double?) -> Text {
-        Text(verbatim: "\(formattedString(value))")
+        Text(verbatim: "\(NetworkThroughput.formatted(value))")
     }
 
     func iconSize(for layout: MenuBarLabelStyle.LayoutDirection) -> CGFloat {

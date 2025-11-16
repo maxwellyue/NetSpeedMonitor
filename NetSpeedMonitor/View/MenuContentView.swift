@@ -1,7 +1,4 @@
-import os.log
 import SwiftUI
-
-public var logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "elegracer")
 
 struct MenuContentView: View {
     @Environment(\.openWindow) var openWindow
