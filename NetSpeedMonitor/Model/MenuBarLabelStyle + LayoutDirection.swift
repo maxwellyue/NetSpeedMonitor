@@ -1,5 +1,5 @@
 //
-//  MenuBarLabelStyle + Lines.swift
+//  MenuBarLabelStyle + LayoutDirection.swift
 //  NetSpeedMonitor
 //
 //  Created by yueyuemax on 2025/11/15.
@@ -11,10 +11,10 @@ extension MenuBarLabelStyle {
         case horizontal
         case vertical
 
-        var displayName: String {
+        var displayName: LocalizedStringResource {
             switch self {
-            case .horizontal: return "水平排列"
-            case .vertical: return "垂直排列"
+            case .horizontal: return "Horizontal"
+            case .vertical: return "Vertical"
             }
         }
     }

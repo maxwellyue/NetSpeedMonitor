@@ -15,7 +15,7 @@ struct MenuBarLabelStyleView: View {
     @State var txColor: Color = .teal
     @State var rxColor: Color = .orange
 
-    let throughput = NetworkThroughput(rxBps: 1024 * 1024 * 1.5, txBps: 1024 * 1024 * 2.5)
+    let throughput = NetworkThroughput(rxBps: 1024 * 1024 * 1.23, txBps: 1024 * 1024 * 1.23)
 
     var currentStyle: MenuBarLabelStyle {
         MenuBarLabelStyle(
@@ -39,7 +39,7 @@ struct MenuBarLabelStyleView: View {
         Form {
             // 预览区域
             Section {
-                Picker("排列方式", selection: $lines) {
+                Picker("Layout", selection: $lines) {
                     ForEach(MenuBarLabelStyle.LayoutDirection.allCases, id: \.self) { line in
                         Text(line.displayName)
                             .tag(line)
@@ -48,7 +48,7 @@ struct MenuBarLabelStyleView: View {
                 .pickerStyle(.segmented)
 
                 VStack {
-                    Picker("前景样式", selection: Binding(
+                    Picker("Foreground Style", selection: Binding(
                         get: {
                             switch foreground {
                             case .template: return 0
@@ -63,22 +63,22 @@ struct MenuBarLabelStyleView: View {
                             }
                         }
                     )) {
-                        Text("跟随系统").tag(0)
-                        Text("自定义颜色").tag(1)
+                        Text("Follow System").tag(0)
+                        Text("Solid Color").tag(1)
                     }
                     .pickerStyle(.segmented)
 
                     if case .accented = foreground {
                         HStack {
                             Spacer()
-                            ColorPicker("上传颜色", selection: $txColor)
+                            ColorPicker(selection: $txColor) { EmptyView() }
                                 .onChange(of: txColor) { _, newColor in
                                     if case .accented(_, let rx) = foreground {
                                         foreground = .accented(tx: CodableColor(newColor), rx: rx)
                                     }
                                 }
 
-                            ColorPicker("下载颜色", selection: $rxColor)
+                            ColorPicker(selection: $rxColor) { EmptyView() }
                                 .onChange(of: rxColor) { _, newColor in
                                     if case .accented(let tx, _) = foreground {
                                         foreground = .accented(tx: tx, rx: CodableColor(newColor))
@@ -89,62 +89,52 @@ struct MenuBarLabelStyleView: View {
                     }
                 }
 
-                Picker("字体风格", selection: $fontDesign) {
+                Picker("Font Design", selection: $fontDesign) {
                     ForEach(MenuBarLabelStyle.FontDesign.allCases, id: \.self) { design in
                         Text(design.displayName)
                             .tag(design)
                     }
                 }
                 .pickerStyle(.segmented)
-            } header: {
-                HStack {
-                    Spacer()
-                    MenuBarLabelTemplate(
-                        throughput: throughput,
-                        lines: lines,
-                        icon: icon,
-                        foreground: foreground,
-                        fontDesign: fontDesign
-                    )
-                    Spacer()
-                }
-                .padding(.vertical)
-            }
 
-            // 图标类型
-            Section {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: minmumWidth, maximum: .infinity))]) {
-                    ForEach(MenuBarLabelStyle.Icon.allOptions, id: \.self) { iconOption in
-                        Button {
-                            icon = iconOption
-                        } label: {
-                            VStack {
-                                MenuBarLabelTemplate(
-                                    throughput: throughput,
-                                    lines: lines,
-                                    icon: iconOption,
-                                    foreground: foreground,
-                                    fontDesign: fontDesign
-                                )
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Icon")
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: minmumWidth, maximum: .infinity))]) {
+                        ForEach(MenuBarLabelStyle.Icon.allOptions, id: \.self) { iconOption in
+                            Button {
+                                icon = iconOption
+                            } label: {
+                                VStack {
+                                    MenuBarLabelTemplate(
+                                        throughput: throughput,
+                                        lines: lines,
+                                        icon: iconOption,
+                                        foreground: foreground,
+                                        fontDesign: fontDesign
+                                    )
+                                }
+                                .frame(maxWidth: .infinity)
                             }
-                            .frame(maxWidth: .infinity)
+                            .buttonStyle(SelectionButtonStyle(selected: icon == iconOption))
+                            .buttonBorderShape(.capsule)
                         }
-                        .buttonStyle(SelectionButtonStyle(selected: icon == iconOption))
-                        .buttonBorderShape(.capsule)
                     }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
-            } header: {
-                Text("图标类型")
-            } footer: {
-                Text("选择用于表示上传和下载的图标样式")
             }
         }
         .formStyle(.grouped)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .frame(minWidth: 400, minHeight: 600)
-        .frame(idealWidth: 400, idealHeight: 600)
         .padding()
+        .toolbar {
+            MenuBarLabelTemplate(
+                throughput: throughput,
+                lines: lines,
+                icon: icon,
+                foreground: foreground,
+                fontDesign: fontDesign
+            )
+            .padding(.horizontal)
+        }
         .task {
             let style = Profiles.shared.style
             self.fontDesign = style.fontDesign
@@ -159,6 +149,7 @@ struct MenuBarLabelStyleView: View {
         .onChange(of: self.currentStyle) {
             Profiles.shared.style = self.currentStyle
         }
+        .frame(idealWidth: 600, idealHeight: 400)
     }
 }
 

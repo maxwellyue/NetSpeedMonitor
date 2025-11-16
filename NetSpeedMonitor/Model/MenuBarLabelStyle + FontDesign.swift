@@ -32,12 +32,12 @@ extension MenuBarLabelStyle {
             }
         }
 
-        var displayName: String {
+        var displayName: LocalizedStringResource {
             switch self {
-            case .default: return "默认"
-            case .monospaced: return "等宽"
-            case .rounded: return "圆角"
-            case .serif: return "衬线"
+            case .default: return "Default"
+            case .monospaced: return "Monospaced"
+            case .rounded: return "Rounded"
+            case .serif: return "Serif"
             }
         }
     }

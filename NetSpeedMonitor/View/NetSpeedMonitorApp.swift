@@ -11,10 +11,9 @@ struct NetSpeedMonitorApp: App {
         .menuBarExtraStyle(.menu)
 
         // 自定义窗口
-        WindowGroup("自定义", id: WindowID.menuBarLabelStyleView.rawValue) {
+        WindowGroup("Customize", id: WindowID.menuBarLabelStyleView.rawValue) {
             MenuBarLabelStyleView()
         }
-        .windowResizability(.contentSize)
         .windowIdealSize(.fitToContent)
     }
 }
