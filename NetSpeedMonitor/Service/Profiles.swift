@@ -4,7 +4,8 @@ import SwiftUI
 class Profiles: ObservableObject {
     static let shared = Profiles()
 
-    @AppStorage("AutoLaunchEnabled") var autoLaunchEnabled: Bool = false {
+    @AppStorage("AutoLaunchEnabled")
+    var autoLaunchEnabled: Bool = false {
         didSet {
             do {
                 try SMAppServiceManager.autoLaunch(enable: self.autoLaunchEnabled)
@@ -14,7 +15,11 @@ class Profiles: ObservableObject {
         }
     }
 
-    @AppStorage("NetSpeedUpdateInterval") var netSpeedUpdateInterval: NetSpeedUpdateInterval = .Sec1
+    @AppStorage("NetSpeedUpdateInterval")
+    var netSpeedUpdateInterval: NetSpeedUpdateInterval = .Sec1
+
+    @AppStorage("MenuBarLabelStyle")
+    var style: MenuBarLabelStyle = .default
 
     init() {
         self.autoLaunchEnabled = SMAppServiceManager.isAutoLaunchEnabled

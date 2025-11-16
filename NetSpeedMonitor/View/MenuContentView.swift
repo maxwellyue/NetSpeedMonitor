@@ -4,6 +4,7 @@ import SwiftUI
 public var logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "elegracer")
 
 struct MenuContentView: View {
+    @Environment(\.openWindow) var openWindow
     @ObservedObject var profiles: Profiles = .shared
 
     var body: some View {
@@ -46,6 +47,14 @@ struct MenuContentView: View {
             Divider()
 
             Section {
+                Button("Customize") {
+                    openWindow(id: WindowID.menuBarLabelStyleView.rawValue)
+                }
+            }
+
+            Divider()
+
+            Section {
                 Button("Quit") {
                     NSApplication.shared.terminate(nil)
                 }
@@ -53,6 +62,8 @@ struct MenuContentView: View {
         }
         .fixedSize()
     }
+
+    private func onClickOpenCustomize() {}
 
     private func onClickOpenActivityMonitor() {
         let bundleID = "com.apple.ActivityMonitor"
